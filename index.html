@@ -35,7 +35,7 @@
 <body class="bg-gradient-to-br from-gray-900 to-black text-white min-h-screen flex items-center justify-center p-6">
   <div class="bg-gray-800/90 backdrop-blur-xl p-6 rounded-2xl shadow-xl w-full max-w-md border border-yellow-500/20">
     <h1 class="text-3xl font-extrabold mb-5 text-center text-yellow-400 tracking-wide">
-      💰 Crypto Convert Calculator
+      💰 Zexxa Convert
     </h1>
 
     <!-- Milih exchange nya -->
@@ -126,9 +126,16 @@
         return;
       }
 
-      let rupiah = usd * 16500;
-      const fee = getFee(rupiah);
-      rupiah -= fee;
+  let rupiah = 0;
+
+  // kalau 1 USD, tetap fix 15.000 tanpa fee
+  if (usd === 1) {
+    rupiah = 15000;
+  } else {
+    rupiah = usd * 16500;
+    const fee = getFee(rupiah);
+    rupiah -= fee;
+  }
 
       resultDisplay.textContent = "Rp " + rupiah.toLocaleString("id-ID");
 
