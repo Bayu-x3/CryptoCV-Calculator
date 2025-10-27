@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Convert Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glow {
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+      transition: box-shadow 0.3s ease;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black text-white min-h-screen flex items-center justify-center p-6">
+  <div class="bg-gray-800/90 backdrop-blur-xl p-6 rounded-2xl shadow-xl w-full max-w-md border border-yellow-500/20">
+    <h1 class="text-3xl font-extrabold mb-5 text-center text-yellow-400 tracking-wide">
+      💰 Crypto Convert Calculator
+    </h1>
+
+    <!-- Milih exchange nya -->
+    <div class="mb-4">
+      <label class="block mb-1 font-semibold text-gray-300">Convert dari:</label>
+      <select id="exchange" class="w-full p-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+        <option value="">Pilih Exchange</option>
+        <option>Binance</option>
+        <option>Gate.io</option>
+        <option>BingX</option>
+        <option>OKX</option>
+        <option>Bitget</option>
+        <option>Wallet Crypto</option>
+      </select>
+    </div>
+
+    <!-- NOM USD -->
+   <div class="mb-4">
+  <label class="block mb-1 font-semibold text-gray-300">Nominal (USD):</label>
+  <input 
+    type="number" 
+    id="usd" 
+    placeholder="Contoh: 5.25" 
+    disabled 
+    class="no-spinner w-full p-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+</div>
+
+    <!-- Ress -->
+    <div id="result-box" class="mt-6 p-5 bg-gray-700/60 rounded-xl text-center border border-gray-600 hidden">
+      <p class="text-lg font-semibold text-gray-300">Hasil Convert (Rp):</p>
+      <p id="result" class="text-4xl font-bold text-green-400 mt-2 select-all">0</p>
+
+      <div id="info-box" class="mt-4 text-sm text-gray-300"></div>
+      <p id="copyMsg" class="text-sm text-gray-400 mt-2 hidden">📋 Tersalin ke clipboard!</p>
+    </div>
+  </div>
+
+  <script>
+    const usdInput = document.getElementById("usd");
+    const exchangeSelect = document.getElementById("exchange");
+    const resultBox = document.getElementById("result-box");
+    const resultDisplay = document.getElementById("result");
+    const infoBox = document.getElementById("info-box");
+    const copyMsg = document.getElementById("copyMsg");
+
+    const exchangeData = {
+      "Binance": { id: "726467944" },
+      "Gate.io": { id: "39264285" },
+      "BingX": { id: "32901684" },
+      "OKX": { id: "308817000237558198" },
+      "Bitget" : { id: "8289962667" },
+      "Wallet Crypto": {}
+    };
+
+    // Logic fee nya
+    function getFee(amount) {
+      if (amount < 10000) return 1500;
+      if (amount <= 30000) return 2000;
+      if (amount <= 60000) return 3000;
+      if (amount <= 100000) return 4000;
+      if (amount <= 170000) return 5000;
+      if (amount <= 350000) return 6000;
+      return 7000;
+    }
+
+    usdInput.addEventListener("focus", () => usdInput.classList.add("glow"));
+    usdInput.addEventListener("blur", () => usdInput.classList.remove("glow"));
+
+    // Enable input setelah pilih exchange
+    exchangeSelect.addEventListener("change", () => {
+      if (exchangeSelect.value) {
+        usdInput.disabled = false;
+        usdInput.focus();
+        calculate();
+      } else {
+        usdInput.disabled = true;
+        usdInput.value = "";
+        resultBox.classList.add("hidden");
+      }
+    });
+
+    function calculate() {
+      const usd = parseFloat(usdInput.value);
+      const exchange = exchangeSelect.value;
+
+      if (isNaN(usd) || !exchange) {
+        resultBox.classList.add("hidden");
+        return;
+      }
+
+      let rupiah = usd * 16500;
+      const fee = getFee(rupiah);
+      rupiah -= fee;
+
+      resultDisplay.textContent = "Rp " + rupiah.toLocaleString("id-ID");
+
+      // Info tambahan sesuai exchange
+      let infoHTML = "";
+      const data = exchangeData[exchange];
+      const formattedUSD = usd.toFixed(2).replace(/\.00$/, "");
+
+      if (exchange === "Wallet Crypto") {
+        infoHTML = `
+          <p class="mt-3 text-gray-300 italic">
+            Silakan <span class="text-yellow-400 font-semibold">inbox di Facebook</span> untuk konfirmasi dan pengiriman jika ingin convert via wallet crypto.
+          </p>
+        `;
+      } else {
+        infoHTML = `
+          <p class="mt-3">
+            Silakan kirim <span class="text-yellow-400 font-semibold">${formattedUSD} USD</span> ke ID ${exchange} di bawah ini.
+            Setelah transfer, <span class="text-yellow-400 font-semibold">screenshot bukti pembayaran</span> dan kirim ke gw untuk konfirmasi (sekalian send payment).
+          </p>
+          <div class="mt-3 bg-gray-800 p-3 rounded-lg border border-gray-600">
+            <p class="font-semibold text-yellow-400">ID ${exchange}:</p>
+            <div class="flex items-center justify-between mt-1">
+              <span id="exchangeId" class="font-mono">${data.id}</span>
+              <button id="copyIdBtn" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-md text-sm font-semibold active:scale-95 transition-all">Salin</button>
+            </div>
+            <p class="text-gray-400 text-sm mt-2">A/n: <span class="font-semibold text-white">Zexxa Kaelion</span></p>
+          </div>
+        `;
+      }
+
+      infoBox.innerHTML = infoHTML;
+      resultBox.classList.remove("hidden");
+      resultBox.classList.add("animate-fade-in");
+
+      setTimeout(() => resultBox.classList.remove("animate-fade-in"), 400);
+
+      // event copy id
+      setTimeout(() => {
+        const copyIdBtn = document.getElementById("copyIdBtn");
+        const exchangeId = document.getElementById("exchangeId");
+        if (copyIdBtn) {
+          copyIdBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(exchangeId.textContent);
+            copyIdBtn.textContent = "✅ Disalin";
+            setTimeout(() => (copyIdBtn.textContent = "Salin"), 1500);
+          });
+        }
+      }, 100);
+    }
+
+    usdInput.addEventListener("input", calculate);
+  </script>
+</body>
+</html>
