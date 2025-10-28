@@ -5,7 +5,7 @@ Dibuat menggunakan **HTML, CSS (TailwindCSS), dan JavaScript**.
 
 ## ✨ Fitur
 - Konversi real-time dari USD ke IDR  
-- Nilai minimal 1 USD tetap dihitung 15.000 IDR  
+- Nilai minimal 1 USD tetap dihitung 16.500 IDR  
 - Tampilan responsif dan clean dengan TailwindCSS  
 - Dapat diakses secara online melalui Netlify
 
