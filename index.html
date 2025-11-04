@@ -32,7 +32,7 @@
         <option>BingX</option>
         <option>OKX</option>
         <option>Bitget</option>
-        <option>Wallet Crypto</option>
+        <option>Wallet Crypto / Onchain</option>
       </select>
     </div>
 
@@ -69,7 +69,7 @@
       "BingX": { id: "32901684" },
       "OKX": { id: "308817000237558198" },
       "Bitget": { id: "8289962667" },
-      "Wallet Crypto": {}
+      "Wallet Crypto / Onchain": {}
     };
 
     function getFee(amount) {
@@ -80,7 +80,10 @@
       if (amount <= 200000) return 5000;
       if (amount <= 250000) return 6000;
       if (amount <= 350000) return 7000;
-      return 8000;
+      if (amount <= 500000) return 8000;
+      if (amount <= 750000) return 9000;
+      if (amount <= 950000) return 10000;
+      return 11000;
     }
 
     exchangeSelect.addEventListener("change", () => {
@@ -104,36 +107,21 @@
 
       // Validasi negatif
       if (usd < 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Nominal tidak valid!',
-          text: 'Nominal tidak boleh negatif.',
-          confirmButtonColor: '#facc15'
-        });
+        Swal.fire({ icon: 'error', title: 'Nominal tidak valid!', text: 'Nominal tidak boleh negatif.', confirmButtonColor: '#facc15' });
         usdInput.value = "";
         return;
       }
 
       // Maksimal 100 USD
       if (usd > 100) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Melebihi Batas!',
-          text: 'Maksimal hanya 100 USD.',
-          confirmButtonColor: '#facc15'
-        });
+        Swal.fire({ icon: 'warning', title: 'Melebihi Batas!', text: 'Maksimal hanya 100 USD.', confirmButtonColor: '#facc15' });
         usdInput.value = "";
         return;
       }
 
       // Gate.io minimal 1 USD
       if (exchange === "Gate.io" && usd < 1) {
-        Swal.fire({
-          icon: 'info',
-          title: 'Minimal Gate.io',
-          text: 'Minimal convert di Gate.io adalah 1 USD.',
-          confirmButtonColor: '#facc15'
-        });
+        Swal.fire({ icon: 'info', title: 'Minimal Gate.io', text: 'Minimal convert di Gate.io adalah 1 USD.', confirmButtonColor: '#facc15' });
         usdInput.value = "";
         return;
       }
@@ -149,7 +137,7 @@
       if (usd === 1) {
         rupiah = 15000;
       } else {
-        rupiah = usd * 16550;
+        rupiah = usd * 16500;
         fee = getFee(rupiah);
         rupiah -= fee;
       }
@@ -161,15 +149,63 @@
       const data = exchangeData[exchange];
 
       let infoHTML = `
-        <p class="mt-3">Total = ${formattedUSD} USD × 16,500 - Fee (${fee.toLocaleString("id-ID")})</p>
-        <p class="mt-3"> Silakan kirim <span class="text-yellow-400 font-semibold">${formattedUSD} USD</span> ke ID ${exchange} di bawah ini. Setelah transfer, <span class="text-yellow-400 font-semibold">screenshot halaman ini & bukti pembayaran</span> dan kirim ke gw untuk konfirmasi <br> (sekalian send payment). </p>
+        <p class="mt-3">Total = ${formattedUSD} USD × 16,500 - Fee (${fee.toLocaleString("id-ID")})</p> <p class="mt-3"> Silakan kirim <span class="text-yellow-400 font-semibold">${formattedUSD} USD</span> ke ${exchange} di bawah ini. Setelah transfer, <span class="text-yellow-400 font-semibold">screenshot halaman ini & bukti pembayaran</span> dan kirim ke gw untuk konfirmasi <br> (sekalian send payment). </p>
       `;
 
-      if (exchange === "Wallet Crypto") {
+      if (exchange === "Wallet Crypto / Onchain") {
         infoHTML += `
-          <p class="mt-3 text-gray-300 italic">
-            Silakan <span class="text-yellow-400 font-semibold">inbox di Facebook</span> untuk konfirmasi pengiriman via wallet crypto.
-          </p>
+        <div class="mt-4 bg-gray-800 p-4 rounded-xl border border-gray-700 text-left space-y-4">
+  <p class="font-semibold text-yellow-400 text-lg border-b border-yellow-500/20 pb-2">
+    💼 Alamat Wallet
+  </p>
+
+  <!-- EVM Networks -->
+  <div>
+    <p class="text-gray-300 text-sm mb-2 font-medium">
+      🌐 BEP-20 / PLASMA / Ethereum / Base / Arbitrum / Polygon / Avalanche C-Chain / Optimism
+    </p>
+    <div class="flex items-center justify-between bg-gray-900 px-3 py-2 rounded-lg border border-gray-700">
+      <span id="bep20" class="text-xs font-mono break-all text-gray-200">
+        0x35869dc158db5565f48d9bf80339e1f16cff4374
+      </span>
+      <button id="copyBEP" class="ml-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-md text-xs font-semibold transition-all active:scale-95">
+        Salin
+      </button>
+    </div>
+  </div>
+
+  <!-- APTOS -->
+  <div>
+    <p class="text-gray-300 text-sm mb-2 font-medium">⚡ APTOS</p>
+    <div class="flex items-center justify-between bg-gray-900 px-3 py-2 rounded-lg border border-gray-700">
+      <span id="aptos" class="text-xs font-mono break-all text-gray-200">
+        0x3fc53d3ecbd3e88bb51ff51c0d449d28db779af6b67ee3ecddea25205b1627f3
+      </span>
+      <button id="copyAPT" class="ml-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-md text-xs font-semibold transition-all active:scale-95">
+        Salin
+      </button>
+    </div>
+  </div>
+
+  <!-- SOLANA -->
+  <div>
+    <p class="text-gray-300 text-sm mb-2 font-medium">☀️ SOLANA</p>
+    <div class="flex items-center justify-between bg-gray-900 px-3 py-2 rounded-lg border border-gray-700">
+      <span id="solana" class="text-xs font-mono break-all text-gray-200">
+        8J5FDdydRn3pPfHrF6AAoP5hoxn2sNVD8QJPzgkXsU9i
+      </span>
+      <button id="copySOL" class="ml-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-md text-xs font-semibold transition-all active:scale-95">
+        Salin
+      </button>
+    </div>
+  </div>
+
+  <p class="text-gray-400 text-xs italic pt-2 border-t border-gray-700">
+    ⚠️ Gunakan jaringan yang sesuai dengan jenis wallet di atas.  
+    Alamat BEP-20 dan PLASMA dll adalah sama. Pastikan network benar sebelum mengirim.
+  </p>
+</div>
+
         `;
       } else {
         infoHTML += `
@@ -189,23 +225,32 @@
       resultBox.classList.add("animate-fade-in");
       setTimeout(() => resultBox.classList.remove("animate-fade-in"), 400);
 
-      // Copy ID
+      // Copy logic
       setTimeout(() => {
-        const copyIdBtn = document.getElementById("copyIdBtn");
-        const exchangeId = document.getElementById("exchangeId");
-        if (copyIdBtn) {
-          copyIdBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(exchangeId.textContent);
-            Swal.fire({
-              icon: 'success',
-              title: 'Berhasil!',
-              text: 'ID berhasil disalin ke clipboard.',
-              timer: 1500,
-              showConfirmButton: false
+        const copyButtons = [
+          { id: "copyIdBtn", target: "exchangeId" },
+          { id: "copyBEP", target: "bep20" },
+          { id: "copyAPT", target: "aptos" },
+          { id: "copySOL", target: "solana" }
+        ];
+
+        copyButtons.forEach(btn => {
+          const button = document.getElementById(btn.id);
+          const text = document.getElementById(btn.target);
+          if (button && text) {
+            button.addEventListener("click", () => {
+              navigator.clipboard.writeText(text.textContent);
+              Swal.fire({
+                icon: "success",
+                title: "Disalin!",
+                text: "Alamat berhasil disalin ke clipboard.",
+                timer: 1500,
+                showConfirmButton: false
+              });
             });
-          });
-        }
-      }, 100);
+          }
+        });
+      }, 200);
     });
   </script>
 </body>
