@@ -83,7 +83,8 @@
       if (amount <= 500000) return 8000;
       if (amount <= 750000) return 9000;
       if (amount <= 950000) return 10000;
-      return 13000;
+      if (amount <= 250000) return 12000;
+      return 15000;
     }
 
     exchangeSelect.addEventListener("change", () => {
