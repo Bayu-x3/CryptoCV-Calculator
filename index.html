@@ -79,11 +79,11 @@
       if (amount <= 100000) return 4000;
       if (amount <= 200000) return 5000;
       if (amount <= 250000) return 6000;
-      if (amount <= 350000) return 7000;
+      if (amount <= 400000) return 7000;
       if (amount <= 500000) return 8000;
       if (amount <= 750000) return 9000;
       if (amount <= 950000) return 10000;
-      return 11000;
+      return 13000;
     }
 
     exchangeSelect.addEventListener("change", () => {
@@ -113,8 +113,8 @@
       }
 
       // Maksimal 100 USD
-      if (usd > 100) {
-        Swal.fire({ icon: 'warning', title: 'Melebihi Batas!', text: 'Maksimal hanya 100 USD.', confirmButtonColor: '#facc15' });
+      if (usd > 200) {
+        Swal.fire({ icon: 'warning', title: 'Melebihi Batas!', text: 'Maksimal hanya 200 USD.', confirmButtonColor: '#facc15' });
         usdInput.value = "";
         return;
       }
